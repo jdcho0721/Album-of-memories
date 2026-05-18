@@ -141,6 +141,20 @@
         .active .wave-bar { animation: wave-anim 1s infinite ease-in-out; }
         @keyframes wave-anim { 0%, 100% { height: 5px; } 50% { height: 20px; } }
         #chat-status { font-size: 1.1rem; color: var(--soft-bg); flex: 1; }
+
+        /* 비디오 레이어 팝업 스타일 추가 */
+        #video-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center;
+            flex-direction: column;
+        }
+        #video-player {
+            width: 800px; max-width: 90%; border: 5px solid var(--gold); border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7); background: #000;
+        }
+        #video-caption {
+            margin-top: 15px; color: #fff; font-family: 'Gowun Batang', serif; font-size: 1.5rem; text-align: center;
+        }
     </style>
 </head>
 
@@ -173,9 +187,9 @@
         <h1>추억의 소리 앨범</h1>
         <div class="guide-box">
             <h2>이용 방법</h2>
-            <p>1. <b>친구 선택:</b> 마우스 클릭, 화면 터치 또는 키보드 방향키 이동</p>
-            <p>2. <b>추억의 릴레이 재생:</b> 카드를 선택하면 [명찰 안내 ➔ 사진 해설 ➔ 실제 목소리 ➔ 장래 희망]이 순서대로 자동 재생됩니다.</p>
-            <p>3. <b>목소리만 듣기:</b> 카드를 더블 클릭하거나 키보드 스페이스(Space) 바를 누르면 친구의 실제 목소리만 바로 들을 수 있습니다.</p>
+            <p>1. <b>친구 선택:</b> 탭 & 엔터 키, 마우스 클릭, 키보드 방향키 이동 후 화면 터치 </p>
+            <p>2. <b>추억의 릴레이 재생:</b> 카드를 선택하면 [명찰 안내 ➔ 사진 해설 ➔ 실제 목소리 ➔ 장래 희망 ➔ 장래희망 영상]이 순서대로 자동 재생됩니다.</p>
+            <p>3. <b>장래희망 바로 보기:</b> 카드를 더블 클릭하거나 키보드 스페이스(Space) 바를 누르면, 혹은 스마트폰에서 길게 터치(롱 프레스)하면 친구의 장래희망 소망 안내와 영상을 바로 감상할 수 있습니다.</p>
             <p>4. <b>음성 인식 챗봇:</b> 키보드 <b>V 키</b>를 누르거나 마이크 아이콘을 누른 후 "임이삭 어디 있어?", "조헌 장래희망"과 같이 질문해 보세요.</p>
             <p style="margin-top: 8px; color: #e67e22; font-size: 0.95rem;">※ 발음이 정확하지 않아도 인공지능이 가장 유사한 이름을 찾아 <b>'첫 번째 줄 첫 번째 칸'</b> 형태로 친절하게 위치와 꿈을 안내합니다.</p>
         </div>
@@ -192,12 +206,17 @@
 
 <div id="audio-container" aria-hidden="true">
     <audio id="audio-김희연" src="김희연졸업2.m4a" preload="auto"></audio>
-    <audio id="audio-송영조" src="송영조졸업.m4a" preload="auto"></audio>
+    <audio id="audio-송영조" src="송영조졸업.mp3" preload="auto"></audio>
     <audio id="audio-이정민" src="이정민 졸업.m4a" preload="auto"></audio>
     <audio id="audio-임이삭" src="임이삭졸업.m4a" preload="auto"></audio>
     <audio id="audio-임찬서" src="임찬서졸업2.m4a" preload="auto"></audio>
     <audio id="audio-장준원" src="장준원졸업2.m4a" preload="auto"></audio> 
     <audio id="audio-조헌" src="조헌졸업1.m4a" preload="auto"></audio>
+</div>
+
+<div id="video-overlay" onclick="closeVideoPlayer()">
+    <video id="video-player" controls preload="auto" onclick="event.stopPropagation()"></video>
+    <div id="video-caption"></div>
 </div>
 
 <main id="album-frame">
@@ -234,8 +253,8 @@
 </main>
 
 <footer id="info-panel">
-    <div id="stage-indicator">앨범 탐색</div>
-    <div id="message-box">추억이 담긴 앨범에서 친구를 선택해 주세요.</div>
+    <div id="stage-indicator">앨범 연동</div>
+    <div id="message-box">화면을 터치하여 추억의 소리 앨범을 시작해 주세요.</div>
 </footer>
 
 <script>
@@ -254,9 +273,15 @@ function unlockAudio() {
     }
     document.querySelectorAll('audio:not(#bgm-player)').forEach(audio => audio.load());
     isAudioUnlocked = true;
+
+    updateUI(
+        "앨범 연동 완료", 
+        "추억의 앨범에 오신 것을 환영합니다. 화면을 터치해서 추억의 친구를 찾아보세요.", 
+        1.0
+    );
 }
 
-window.addEventListener('click', () => {
+window.addEventListener('click', (e) => {
     if (audioCtx.state === 'suspended') {
         audioCtx.resume().then(() => unlockAudio());
     } else {
@@ -264,14 +289,15 @@ window.addEventListener('click', () => {
     }
 }, { once: true });
  
+// 비디오 파일명 매칭 데이터 추가 통합
 const friendData = {
-    '김희연': { dream: "따뜻한 손길로 사람들의 지친 몸과 피로를 치료해 주는 안마사", pitch: 1.1 },
-    '송영조': { dream: "주변 사람들에게 언제나 긍정적인 힘을 선사하는 멋진 사람", pitch: 0.9 },
-    '이정민': { dream: "시원한 홈런과 함께 희망을 쏘아 올리는 멋진 야구선수", pitch: 1.0 },
-    '임이삭': { dream: "친구들에게 운동의 즐거움과 신체 활력을 전하는 특수체육교사", pitch: 0.95 },
-    '임찬서': { dream: "우리가 살아가는 환경을 깨끗하고 안전하게 지켜내는 방역업체 경영인", pitch: 1.05 },
-    '장준원': { dream: "많은 승객들을 목적지까지 편안하고 안전하게 모시는 지하철기관사", pitch: 0.92 },
-    '조헌': { dream: "피로와 통증을 말끔히 날려버리는 다정하고 훌륭한 안마사", pitch: 1.0 }
+    '김희연': { dream: "따뜻한 손길로 사람들의 지친 몸과 피로를 치료해 주는 안마사", pitch: 1.1, video: "김희연-분홍빛_안경.mp4" },
+    '송영조': { dream: "주변 사람들에게 언제나 긍정적인 힘을 선사하는 멋진 사람", pitch: 0.9, video: "송영조-카키색_새벽길.mp4" },
+    '이정민': { dream: "시원한 홈런과 함께 희망을 쏘아 올리는 멋진 야구선수", pitch: 1.0, video: "이정민-함께_뛰는_미래.mp4" },
+    '임이삭': { dream: "친구들에게 운동의 즐거움과 신체 활력을 전하는 특수체육교사", pitch: 0.95, video: "임이삭-함께_뛰는_순간.mp4" },
+    '임찬서': { dream: "우리가 살아가는 환경을 깨끗하고 안전하게 지켜내는 방역업체 경영인", pitch: 1.05, video: "임찬서-너의_맘이_머무는_곳.mp4" },
+    '장준원': { dream: "많은 승객들을 목적지까지 편안하고 안전하게 모시는 지하철기관사", pitch: 0.92, video: "장준원-안전한_내일로.mp4" },
+    '조헌': { dream: "피로와 통증을 말끔히 날려버리는 다정하고 훌륭한 안마사", pitch: 1.0, video: "조헌-비타민_같은_너.mp4" }
 };
 
 let currentPlayingAudio = null;
@@ -301,26 +327,72 @@ function stopAllAudio() {
         currentPlayingAudio.currentTime = 0;
         currentPlayingAudio = null;
     }
+    // 오디오 중지 시 열려 있는 영상도 정지 및 은닉 처리
+    closeVideoPlayer(false);
 }
 
-function playDreamSound(name) {
-    stopAllAudio();
-    const audio = document.getElementById(`audio-${name}`);
-    if (audio) {
-        currentPlayingAudio = audio;
-        audio.load();
-        audio.play().catch((err) => {
-            speak("음성 재생 제한을 풀기 위해 화면을 한 번 터치해 주세요.");
-        });
-        document.getElementById('message-box').innerText = `${name} 학생의 실제 목소리를 재생합니다.`;
-        document.getElementById('stage-indicator').innerText = "목소리 청취";
+// 영상 레이어를 닫는 함수
+function closeVideoPlayer(triggerTTS = true) {
+    const videoOverlay = document.getElementById('video-overlay');
+    const videoPlayer = document.getElementById('video-player');
+    
+    if (videoOverlay.style.display === 'flex') {
+        videoPlayer.pause();
+        videoPlayer.currentTime = 0;
+        videoOverlay.style.display = 'none';
+        
+        // BGM 원래 볼륨으로 복구
+        const bgm = document.getElementById('bgm-player');
+        if (bgm) bgm.volume = 0.15;
+
+        if (triggerTTS) {
+            document.getElementById('stage-indicator').innerText = "앨범 탐색";
+            document.getElementById('message-box').innerText = "영상 상영이 완료되었습니다. 다른 친구도 찾아보세요.";
+        }
     }
+}
+
+// 장래희망 영상(mp4)을 화면에 재생하는 핵심 제어 로직
+function playDreamVideo(name) {
+    const videoOverlay = document.getElementById('video-overlay');
+    const videoPlayer = document.getElementById('video-player');
+    const videoCaption = document.getElementById('video-caption');
+    
+    const videoSrc = friendData[name].video;
+    if (!videoSrc) return;
+
+    // 영상 재생 집중을 위해 BGM 일시 음소거 수준으로 다운
+    const bgm = document.getElementById('bgm-player');
+    if (bgm) bgm.volume = 0.02;
+
+    document.getElementById('stage-indicator').innerText = "⑤ 미래 영상 재생";
+    document.getElementById('message-box').innerText = `${name} 학생의 꿈이 담긴 영상을 상영합니다.`;
+
+    videoPlayer.src = videoSrc;
+    videoCaption.innerText = `🎬 ${name} 학생의 꿈: ${friendData[name].dream}`;
+    videoOverlay.style.display = 'flex';
+    
+    videoPlayer.load();
+    videoPlayer.play().catch(err => {
+        console.error("비디오 자동 재생 실패:", err);
+        // 모바일 터치 대응 등을 위해 컨트롤러 표시 유지
+    });
+
+    // 영상 재생이 끝났을 때 자동 종료 처리
+    videoPlayer.onended = () => {
+        closeVideoPlayer(true);
+    };
 }
 
 function executeSingleClickAction(name) {
     stopAllAudio();
     
-    updateUI("① 명찰 안내", `이 카드는 ${name} 학생의 졸업 사진 명찰입니다.`, 1.0, () => {
+    const cardNames = cards.map(card => card.id.replace('card-', ''));
+    const targetIdx = cardNames.indexOf(name);
+    const row = Math.floor(targetIdx / cols) + 1;
+    const col = (targetIdx % cols) + 1;
+    
+    updateUI("① 명찰 안내", `이 카드는 ${row}번째 줄, ${col}번째 칸에 있는 ${name} 학생의 졸업 사진 명찰입니다.`, 1.0, () => {
         setTimeout(() => {
             const imgElement = document.getElementById(`img-${name}`);
             const desc = (imgElement && imgElement.getAttribute('aria-label')) || "";
@@ -358,10 +430,18 @@ function playStudentVoice(name) {
 }
 
 function announceDreamTTS(name) {
+    // ④ 장래 희망 TTS 안내가 완료되면 이어서 장래희망 mp4 영상을 순차 연동 재생
     updateUI("④ 장래 희망", `${name} 학생의 자랑스러운 소망은 바로 ${friendData[name].dream}입니다.`, friendData[name].pitch, () => {
-        document.getElementById('stage-indicator').innerText = "앨범 탐색";
-        document.getElementById('message-box').innerText = "소개 안내가 완료되었습니다. 다른 친구의 카드도 탐색해 보세요.";
+        setTimeout(() => {
+            playDreamVideo(name);
+        }, 800);
     });
+}
+
+// 더블 클릭 또는 롱 프레스 작동 시 장래희망 정보 및 영상 단독 다이렉트 재생
+function executeQuickDreamAction(name) {
+    stopAllAudio();
+    announceDreamTTS(name);
 }
 
 cards.forEach((card, index) => {
@@ -370,6 +450,8 @@ cards.forEach((card, index) => {
     let isLongPress = false;
 
     card.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        if (!isAudioUnlocked) { unlockAudio(); return; }
         if (isLongPress) { isLongPress = false; return; }
         if (window.speechSynthesis.speaking === false) {
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
@@ -377,13 +459,18 @@ cards.forEach((card, index) => {
         executeSingleClickAction(name);
     });
 
-    card.addEventListener('dblclick', () => playDreamSound(name));
+    // 더블 클릭 시 장래희망 TTS 및 영상 즉시 실행으로 변경
+    card.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        executeQuickDreamAction(name);
+    });
 
+    // 600ms 이상 길게 누르면 장래희망 TTS 및 영상 즉시 실행으로 변경
     card.addEventListener('touchstart', (e) => {
         isLongPress = false;
         touchTimer = setTimeout(() => {
             isLongPress = true;
-            playDreamSound(name);
+            executeQuickDreamAction(name);
         }, 600); 
     }, { passive: true });
 
@@ -393,6 +480,7 @@ cards.forEach((card, index) => {
 });
 
 document.addEventListener('keydown', (e) => {
+    if (!isAudioUnlocked) unlockAudio();
     if (currentIndex === -1) { currentIndex = 0; cards[0].focus(); return; }
     const name = cards[currentIndex].id.replace('card-', '');
     let newIndex = currentIndex;
@@ -403,8 +491,12 @@ document.addEventListener('keydown', (e) => {
         case 'ArrowDown': if (currentIndex + cols < cards.length) newIndex = currentIndex + cols; break;
         case 'ArrowUp': if (currentIndex - cols >= 0) newIndex = currentIndex - cols; break;
         case 'Enter': executeSingleClickAction(name); break;
-        case ' ': e.preventDefault(); playDreamSound(name); break;
+        case ' ': // 스페이스 바 입력 시에도 장래희망으로 다이렉트 점프
+            e.preventDefault(); 
+            executeQuickDreamAction(name); 
+            break;
         case 'v': case 'V': toggleSpeechRecognition(); break;
+        case 'Escape': closeVideoPlayer(true); break; // ESC 누르면 영상 닫기
     }
     if (newIndex !== currentIndex) { currentIndex = newIndex; cards[currentIndex].focus(); }
 });
@@ -446,9 +538,28 @@ function toggleSpeechRecognition() {
     isRecognizing ? recognition.stop() : recognition.start();
 }
 
-function toggleGuide(show) { document.getElementById('guide-overlay').style.display = show ? 'flex' : 'none'; }
+function toggleGuide(show) { 
+    const overlay = document.getElementById('guide-overlay');
+    if (show) {
+        overlay.style.display = 'flex';
+        if (!isAudioUnlocked) unlockAudio();
+        
+        const guideNarration = "추억의 소리 앨범 이용 방법 안내입니다. " +
+            "첫째, 친구 선택은 마우스 클릭이나 화면 터치, 또는 키보드 방향키 이동으로 가능합니다. " +
+            "둘째, 카드를 선택하면 명찰 안내, 사진 해설, 실제 목소리, 장래 희망, 그리고 꿈이 가득 담긴 동영상이 순서대로 자동 재생됩니다. " +
+            "셋째, 카드를 더블 클릭하거나 키보드 스페이스 바를 누르면, 또는 화면을 길게 터치하면 친구의 장래희망 안내와 영상을 바로 감상할 수 있습니다. " +
+            "넷째, 키보드 브이 키를 누르거나 마이크 아이콘을 누른 후 이름을 말하면 인공지능 챗봇이 위치와 꿈을 친절하게 안내합니다.";
+        
+        updateUI("이용방법 안내", "이용 방법 가이드를 음성으로 해설합니다.", 1.0);
+        speak(guideNarration, 1.0);
+    } else {
+        overlay.style.display = 'none';
+        stopAllAudio();
+        document.getElementById('stage-indicator').innerText = "앨범 탐색";
+        document.getElementById('message-box').innerText = "추억이 담긴 앨범에서 친구를 선택해 주세요.";
+    }
+}
 
-/* 유사 발음 매칭을 위한 레벤슈타인 거리 알고리즘 함수 */
 function getSimilarity(s1, s2) {
     s1 = s1.toLowerCase();
     s2 = s2.toLowerCase();
@@ -484,7 +595,6 @@ function handleVoiceCommand(cmd) {
     let highestSimilarity = 0;
     let directMatch = false;
 
-    // 1단계: 기존처럼 완벽히 이름이 포함되어 있는지 먼저 확인
     for (let name of cardNames) {
         if (cleanCmd.includes(name)) {
             bestMatchName = name;
@@ -493,9 +603,7 @@ function handleVoiceCommand(cmd) {
         }
     }
 
-    // 2단계: 직접 매칭이 안 되었다면 유사도(문자 거리) 비교 검사 진행
     if (!directMatch) {
-        // 음성 입력 텍스트에서 2~3글자 단위로 잘라내어 타겟 이름들과 유사도 비교
         for (let i = 0; i <= cleanCmd.length - 2; i++) {
             for (let chunkLen = 2; chunkLen <= 4; chunkLen++) {
                 if (i + chunkLen > cleanCmd.length) continue;
@@ -512,14 +620,13 @@ function handleVoiceCommand(cmd) {
         }
     }
 
-    // 유사도가 최소 0.5(50%) 이상인 대상이 있을 경우에만 매칭 성공으로 인정
     if (bestMatchName && (directMatch || highestSimilarity >= 0.5)) {
         const targetIdx = cardNames.indexOf(bestMatchName);
         
         if (cleanCmd.includes("꿈") || cleanCmd.includes("장래희망") || cleanCmd.includes("진로") || cleanCmd.includes("소망")) {
-            updateUI("음성 답변", `${bestMatchName} 학생의 자랑스러운 소망은 '${friendData[bestMatchName].dream}'입니다.`, friendData[bestMatchName].pitch);
+            // 챗봇으로 장래희망을 물어보는 경우에도 답변 TTS 수수 즉각 영상 인터페이스로 직결하도록 수정
+            executeQuickDreamAction(bestMatchName);
         } else {
-            // 줄(행) 및 칸(열) 위치 계산
             const row = Math.floor(targetIdx / cols) + 1; 
             const col = (targetIdx % cols) + 1; 
             

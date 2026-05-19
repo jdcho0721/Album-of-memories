@@ -125,20 +125,16 @@
             z-index: 10;
         }
         
-.character-img { 
-            width: 85%;
-            aspect-ratio: 2/3;
-            border-radius: 10px;
-            
-            /* cover를 유지하되, 전체적인 모습이 보이도록 조정 */
-            background-size: cover; 
-            
-            /* [수정] top 대신 중앙보다 약간 위쪽(20%)으로 설정하여 얼굴과 옷을 균형 있게 맞춤 */
-            background-position: center 20%; 
-            
-            background-repeat: no-repeat;
-            border: 1px solid #f5f5f5; 
-        }
+.character-img {
+    width: 100%;             /* 카드의 폭에 꽉 차게 변경 */
+    aspect-ratio: 1 / 1;     /* 1:1 비율을 유지하여 정사각형 격자 틀 완성 */
+    background-size: cover;
+    background-position: center 20%; 
+    background-repeat: no-repeat;
+    border-radius: 8px;      /* 모서리 둥글기 */
+    margin-bottom: 8px;
+    border: 1px solid #f5f5f5;
+}
         
         #img-김희연 { background-image: url('김희연-고3c.jpeg'); }
         #img-송영조 { background-image: url('송영조-고3c.png'); }
@@ -205,11 +201,25 @@
             .chatbot-header { padding: 10px 12px; gap: 10px; }
             
             /* [요청 반영] 모바일 화면 폭에 부드럽게 적응하며 가로 3열 격자 구조 유지 */
-            #album-container {
-                grid-template-columns: repeat(3, 1fr); 
-                padding: 10px; gap: 8px; border-width: 8px;
-            }
-            .photo-card { padding: 6px 4px; border-radius: 8px; }
+#album-container {
+    width: 100%;
+    display: grid;
+    /* PC: 4열, 태블릿: 3열, 모바일: 2열 또는 3열 자동 조정 */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    padding: 15px;
+    box-sizing: border-box;
+}
+   .photo-card {
+    background: #fff;
+    padding: 10px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
             .name-tag { font-weight: 800; margin-top: 6px; }
 
             #info-panel { flex-direction: column; text-align: center; gap: 6px; padding: 12px; }

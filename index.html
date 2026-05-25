@@ -373,6 +373,40 @@ window.addEventListener('click', (e) => {
     }
 }, { once: true });
  
+// 예시: 페이지 로드 시 오디오 잠금을 풀기 위한 오버레이 레이어 예시 로직
+window.addEventListener('DOMContentLoaded', () => {
+    // 1. 화면 전체를 덮는 접근성 진입 패널 동적 생성 (기존 마크업 파괴 방지)
+    const startOverlay = document.createElement('div');
+    startOverlay.style = "position:fixed; top:0; left:0; width:100vw; height:100vh; background:#2c3e50; z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction:column;";
+    startOverlay.setAttribute('role', 'dialog');
+    startOverlay.setAttribute('aria-label', '전북맹아학교 촉각 앨범 감상 시작 화면');
+
+    const startBtn = document.createElement('button');
+    startBtn.innerText = "터치하여 앨범 감상 시작하기";
+    startBtn.style = "padding:24px 40px; font-size:1.5rem; font-weight:bold; background:#ffd700; color:#333; border:none; border-radius:15px; cursor:pointer; width:80%; max-width:400px;";
+    
+    // 스크린 리더가 이 버튼을 가장 먼저 포커스하도록 설정
+    startBtn.setAttribute('aria-label', '화면을 두 번 탭하여 전북맹아학교 추억의 앨범 감상을 시작하세요.');
+    
+    startOverlay.appendChild(startBtn);
+    document.body.appendChild(startOverlay);
+
+    startBtn.onclick = () => {
+        // 사용자의 직접 터치 상호작용이 일어난 이 순간, 모든 브라우저 오디오 권한이 풀립니다.
+        startOverlay.style.display = 'none';
+        
+        // 기존 코드의 초기화 및 환영 음성 실행
+        speak("반갑습니다. 전북맹아학교 촉각 앨범 공간에 오신 것을 환영합니다. 화면을 좌우로 스와이프하여 사용법 가이드를 보거나, 음성 인식 버튼을 눌러 친구들의 이름을 찾아보세요.", 1.0);
+        
+        // 첫 번째 요소로 초점 강제 이동하여 가이드 제공
+        const mainHeader = document.querySelector('h1');
+        if(mainHeader) {
+            mainHeader.setAttribute('tabindex', '-1');
+            mainHeader.focus();
+        }
+    };
+});
+
 const friendData = {
     '김희연': { dream: "따뜻한 손길로 사람들의 지친 몸과 피로를 치료해 주는 안마사", pitch: 1.1, video: "김희연-분홍빛_안경.mp4" },
     '송영조': { dream: "주변 사람들에게 언제나 긍정적인 힘을 선사하는 멋진 사람", pitch: 0.9, video: "송영조-카키색_새벽길.mp4" },

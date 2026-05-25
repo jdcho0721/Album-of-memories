@@ -125,26 +125,34 @@
             z-index: 10;
         }
         
-.character-img {
-    width: 100%;             /* 카드의 폭에 꽉 차게 변경 */
-    aspect-ratio: 1 / 1;     /* 1:1 비율을 유지하여 정사각형 격자 틀 완성 */
-    background-size: cover;
-    background-position: center 20%; 
-    background-repeat: no-repeat;
-    border-radius: 8px;      /* 모서리 둥글기 */
-    margin-bottom: 8px;
-    border: 1px solid #f5f5f5;
-}
+        .character-img {
+            width: 100%;             /* 카드의 폭에 꽉 차게 변경 */
+            aspect-ratio: 1 / 1;     /* 1:1 비율을 유지하여 정사각형 격자 틀 완성 */
+            background-size: cover;
+            background-position: center 20%; 
+            background-repeat: no-repeat;
+            border-radius: 8px;      /* 모서리 둥글기 */
+            margin-bottom: 8px;
+            border: 1px solid #f5f5f5;
+        }
         
         #img-김희연 { background-image: url('김희연-고3c.jpeg'); }
         #img-송영조 { background-image: url('송영조-고3c.png'); }
         #img-이정민 { background-image: url('이정민-고3c.png'); }
         #img-임이삭 { background-image: url('임이삭-고3c.jpeg'); }
+        
+        /* 최철 선생님 전용 크기 및 위치 맞춤 조정 (얼굴이 크게 나오도록 설정) */
+        #img-최철 { 
+            background-image: url('최철-선생님c.png'); 
+            background-size: 135%; 
+            background-position: center 12%; 
+        } 
+        
         #img-임찬서 { background-image: url('임찬서-고3c.jpeg'); }
         #img-장준원 { background-image: url('장준원-고3c.jpeg'); }
         #img-조헌 { background-image: url('조헌-고3c.png'); }
 
-  name-tag
+        .name-tag { font-weight: bold; margin-top: 4px; color: #2c3e50; }
         
         #info-panel {
             margin-top: 15px; width: 100%; max-width: 1000px; display: flex; justify-content: space-between; align-items: center;
@@ -200,26 +208,25 @@
             
             .chatbot-header { padding: 10px 12px; gap: 10px; }
             
-            /* [요청 반영] 모바일 화면 폭에 부드럽게 적응하며 가로 3열 격자 구조 유지 */
-#album-container {
-    width: 100%;
-    display: grid;
-    /* PC: 4열, 태블릿: 3열, 모바일: 2열 또는 3열 자동 조정 */
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 12px;
-    padding: 15px;
-    box-sizing: border-box;
-}
-   .photo-card {
-    background: #fff;
-    padding: 10px;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.2s;
-    cursor: pointer;
-}
+            /* 모바일 화면 폭에 부드럽게 적응하며 가로 3열 격자 구조 유지 */
+            #album-container {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 12px;
+                padding: 15px;
+                box-sizing: border-box;
+            }
+            .photo-card {
+                background: #fff;
+                padding: 10px;
+                border-radius: 12px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                transition: transform 0.2s;
+                cursor: pointer;
+            }
             .name-tag { font-weight: 800; margin-top: 6px; }
 
             #info-panel { flex-direction: column; text-align: center; gap: 6px; padding: 12px; }
@@ -247,7 +254,7 @@
             </button>
             <span style="font-size: 0.7rem; color: var(--gold); font-weight: bold;">V키 클릭</span>
         </div>
-        <div id="chat-status">"임찬서 장래희망" 또는 <br style="display:none;" class="m-br">"김희연 어디 있어?"라고 말해보세요.</div>
+        <div id="chat-status">"최철 선생님" 또는 <br style="display:none;" class="m-br">"임찬서 장래희망"이라고 말해보세요.</div>
     </div>
 </header>
 
@@ -260,7 +267,7 @@
             <p>1. <b>친구 선택:</b> 마우스 클릭, 화면 터치, 또는 키보드 방향키 이동 후 엔터 키를 눌러보세요.</p>
             <p>2. <b>추억의 릴레이 재생:</b> 카드를 선택하면 [명찰 안내 ➔ 사진 해설 ➔ 실제 목소리 ➔ 장래 희망 ➔ 장래희망 영상]이 순서대로 자동 재생됩니다.</p>
             <p>3. <b>장래희망 바로 보기:</b> 카드를 빠르게 더블 클릭 (또는 더블 탭) 하거나 키보드 스페이스바를 누르면, 친구의 소망 안내와 영상을 바로 감상할 수 있습니다.</p>
-            <p>4. <b>음성 인식 챗봇:</b> 키보드 <b>V 키</b>를 누르거나 마이크 아이콘을 누른 후 "임이삭 어디 있어?", "조헌 장래희망"과 같이 질문해 보세요.</p>
+            <p>4. <b>음성 인식 챗봇:</b> 키보드 <b>V 키</b>를 누르거나 마이크 아이콘을 누른 후 "임이삭 어디 있어?", "최철 선생님 졸업멘트"와 같이 질문해 보세요.</p>
             <p>5. <b>스마트폰 제스처 (창 닫기):</b> 영상이 상영 중이거나 이용 방법 창이 열려 있을 때, 화면을 책장 넘기듯 <b>왼쪽에서 오른쪽으로 스와이프(밀기)</b>하면 안내 창이나 영상이 자연스럽게 닫힙니다.</p>
         </div>
         <footer id="author-section">
@@ -281,6 +288,7 @@
     <audio id="audio-송영조" src="송영조졸업.mp3" preload="auto"></audio>
     <audio id="audio-이정민" src="이정민 졸업.m4a" preload="auto"></audio>
     <audio id="audio-임이삭" src="임이삭졸업.m4a" preload="auto"></audio>
+    <audio id="audio-최철" src="담임_최철_졸업멘트.m4a" preload="auto"></audio> 
     <audio id="audio-임찬서" src="임찬서졸업2.m4a" preload="auto"></audio>
     <audio id="audio-장준원" src="장준원졸업2.m4a" preload="auto"></audio> 
     <audio id="audio-조헌" src="조헌졸업1.m4a" preload="auto"></audio>
@@ -293,6 +301,10 @@
 
 <main id="album-frame">
     <div id="album-container" role="list">
+        <div class="photo-card" id="card-최철" role="button" tabindex="0">
+            <div class="character-img" id="img-최철" aria-label="단정한 곤색 정장에 와인색 넥타이를 매고, 환한 미소로 졸업 축하하고 있는 최철 담임선생님입니다."></div>
+            <div class="name-tag">최철 선생님</div>
+        </div>
         <div class="photo-card" id="card-김희연" role="button" tabindex="0">
             <div class="character-img" id="img-김희연" aria-label="분홍색 동그란 안경을 쓰고 단발머리를 한 채 밝고 다정하게 미소 짓고 있는 김희연 학생입니다."></div>
             <div class="name-tag">김희연</div>
@@ -310,7 +322,7 @@
             <div class="name-tag">임이삭</div>
         </div>
         <div class="photo-card" id="card-임찬서" role="button" tabindex="0">
-            <div class="character-img" id="img-임찬서" aria-label="투명한 살구색 뿔테 안경을 쓰고 왼쪽 뺨에 매력적인 점이 있으며 부드럽게 미소 짓는 임찬서 학생입니다."></div>
+            <div class="character-img" id="img-임찬서" aria-label="투명한 살구색 뿔테 안경을 쓰고 부드럽게 미소 짓는 임찬서 학생입니다."></div>
             <div class="name-tag">임찬서</div>
         </div>
         <div class="photo-card" id="card-장준원" role="button" tabindex="0">
@@ -366,6 +378,8 @@ const friendData = {
     '송영조': { dream: "주변 사람들에게 언제나 긍정적인 힘을 선사하는 멋진 사람", pitch: 0.9, video: "송영조-카키색_새벽길.mp4" },
     '이정민': { dream: "시원한 홈런과 함께 희망을 쏘아 올리는 멋진 야구선수", pitch: 1.0, video: "이정민-함께_뛰는_미래.mp4" },
     '임이삭': { dream: "친구들에게 운동의 즐거움과 신체 활력을 전하는 특수체육교사", pitch: 0.95, video: "임이삭-함께_뛰는_순간.mp4" },
+    /* 최철 선생님 전용 비디오 파일(선생님의_마지막_숙제.mp4) 연동 완료 */
+    '최철': { dream: "사랑하는 제자들의 앞날을 언제 어디서든 늘 든든하게 격려하고 성원을 보내는 훌륭한 나침반", pitch: 1.0, video: "선생님의_마지막_숙제.mp4" }, 
     '임찬서': { dream: "우리가 살아가는 환경을 깨끗하고 안전하게 지켜내는 방역업체 경영인", pitch: 1.05, video: "임찬서-너의_맘이_머무는_곳.mp4" },
     '장준원': { dream: "많은 승객들을 목적지까지 편안하고 안전하게 모시는 지하철기관사", pitch: 0.92, video: "장준원-안전한_내일로.mp4" },
     '조헌': { dream: "피로와 통증을 말끔히 날려버리는 다정하고 훌륭한 안마사", pitch: 1.0, video: "조헌-비타민_같은_너.mp4" }
@@ -375,7 +389,6 @@ let currentPlayingAudio = null;
 let currentIndex = -1;
 const cards = Array.from(document.querySelectorAll('.photo-card'));
 
-// [보정] 모바일 화면(768px 이하)일 때 가로 3열 레이아웃을 정확하게 반환하도록 매핑
 function getDynamicCols() {
     return window.innerWidth <= 768 ? 3 : 4; 
 }
@@ -436,16 +449,26 @@ function playDreamVideo(name) {
     const videoCaption = document.getElementById('video-caption');
     
     const videoSrc = friendData[name].video;
-    if (!videoSrc) return;
+    if (!videoSrc) {
+        document.getElementById('stage-indicator').innerText = "앨범 탐색";
+        document.getElementById('message-box').innerText = `${name} 선생님의 훈화 해설이 완료되었습니다.`;
+        return;
+    }
 
     const bgm = document.getElementById('bgm-player');
     if (bgm) bgm.volume = 0.02;
 
-    document.getElementById('stage-indicator').innerText = "⑤ 미래 영상 재생";
-    document.getElementById('message-box').innerText = `${name} 학생의 꿈이 담긴 영상을 상영합니다.`;
+    if (name === '최철') {
+        document.getElementById('stage-indicator').innerText = "⑤ 훈화 영상 재생";
+        document.getElementById('message-box').innerText = "최철 선생님의 마지막 숙제 영상을 상영합니다.";
+        videoCaption.innerText = `🎬 최철 선생님의 메시지: ${friendData[name].dream}`;
+    } else {
+        document.getElementById('stage-indicator').innerText = "⑤ 미래 영상 재생";
+        document.getElementById('message-box').innerText = `${name} 학생의 꿈이 담긴 영상을 상영합니다.`;
+        videoCaption.innerText = `🎬 ${name} 학생의 꿈: ${friendData[name].dream}`;
+    }
 
     videoPlayer.src = videoSrc;
-    videoCaption.innerText = `🎬 ${name} 학생의 꿈: ${friendData[name].dream}`;
     videoOverlay.style.display = 'flex';
     
     videoPlayer.load();
@@ -464,7 +487,6 @@ function executeSingleClickAction(name) {
     const cardNames = cards.map(card => card.id.replace('card-', ''));
     const targetIdx = cardNames.indexOf(name);
     
-    // 모바일/PC 레이아웃 동적 컬럼 값 확보 (3열 완벽 대응)
     const activeCols = getDynamicCols();
     const row = Math.floor(targetIdx / activeCols) + 1;
     const col = (targetIdx % activeCols) + 1;
@@ -472,7 +494,9 @@ function executeSingleClickAction(name) {
     const rowString = getOrdinalString(row, '줄');
     const colString = getOrdinalString(col, '칸');
     
-    updateUI("① 명찰 안내", `이 카드는 ${rowString}, ${colString}에 있는 ${name} 학생의 졸업 사진 명찰입니다.`, 1.0, () => {
+    const titleType = name === '최철' ? '최철 선생님의 졸업 사진 명찰' : `${name} 학생의 졸업 사진 명찰`;
+    
+    updateUI("① 명찰 안내", `이 카드는 ${rowString}, ${colString}에 있는 ${titleType}입니다.`, 1.0, () => {
         setTimeout(() => {
             const imgElement = document.getElementById(`img-${name}`);
             const desc = (imgElement && imgElement.getAttribute('aria-label')) || "";
@@ -487,8 +511,9 @@ function executeSingleClickAction(name) {
 }
 
 function playStudentVoice(name) {
+    const infoText = name === '최철' ? "최철 선생님이 목소리로 직접 전하는 따뜻한 졸업 축하 메시지입니다." : `${name} 학생이 목소리로 직접 전하는 이야기입니다.`;
     document.getElementById('stage-indicator').innerText = "③ 실제 목소리";
-    document.getElementById('message-box').innerText = `${name} 학생이 목소리로 직접 전하는 이야기입니다.`;
+    document.getElementById('message-box').innerText = infoText;
     
     const audio = document.getElementById(`audio-${name}`);
     if (audio) {
@@ -510,7 +535,8 @@ function playStudentVoice(name) {
 }
 
 function announceDreamTTS(name) {
-    updateUI("④ 장래 희망", `${name} 학생의 자랑스러운 소망은 바로 ${friendData[name].dream}입니다.`, friendData[name].pitch, () => {
+    const dreamText = name === '최철' ? `최철 선생님의 깊은 바람은 바로 ${friendData[name].dream}입니다.` : `${name} 학생의 자랑스러운 소망은 바로 ${friendData[name].dream}입니다.`;
+    updateUI("④ 장래 희망", dreamText, friendData[name].pitch, () => {
         setTimeout(() => {
             playDreamVideo(name);
         }, 800);
@@ -590,7 +616,7 @@ if (SpeechRecognition) {
     recognition.onstart = () => {
         isRecognizing = true;
         document.getElementById('mic-trigger').classList.add('active');
-        document.getElementById('chat-status').innerText = "궁금한 졸업생의 이름을 경청하고 있습니다...";
+        document.getElementById('chat-status').innerText = "궁금한 졸업생이나 선생님의 이름을 경청하고 있습니다...";
     };
 
     recognition.onresult = (event) => {
@@ -701,10 +727,9 @@ function handleVoiceCommand(cmd) {
     if (bestMatchName && (directMatch || highestSimilarity >= 0.5)) {
         const targetIdx = cardNames.indexOf(bestMatchName);
         
-        if (cleanCmd.includes("꿈") || cleanCmd.includes("장래희망") || cleanCmd.includes("진로") || cleanCmd.includes("소망")) {
+        if (cleanCmd.includes("꿈") || cleanCmd.includes("장래희망") || cleanCmd.includes("진로") || cleanCmd.includes("소망") || cleanCmd.includes("훈화") || cleanCmd.includes("멘트")) {
             executeQuickDreamAction(bestMatchName);
         } else {
-            // 변동된 모바일 3열 동적 가이드 반영
             const activeCols = getDynamicCols();
             const row = Math.floor(targetIdx / activeCols) + 1; 
             const col = (targetIdx % activeCols) + 1; 
@@ -716,14 +741,14 @@ function handleVoiceCommand(cmd) {
             const rowString = getOrdinalString(row, '줄');
             const colString = getOrdinalString(col, '칸');
             
-            updateUI("위치 안내", `${bestMatchName} 학생은 ${rowString} ${colString}에 있습니다.`, 1.0);
+            const targetTitle = bestMatchName === '최철' ? '최철 선생님' : `${bestMatchName} 학생`;
+            updateUI("위치 안내", `${targetTitle}은 ${rowString} ${colString}에 있습니다.`, 1.0);
         }
     } else {
-        speak("학생의 이름을 정확하게 인식하지 못했습니다. 다시 천천히 말씀해 주세요.", 1.0);
+        speak("대상을 정확하게 인식하지 못했습니다. 다시 천천히 말씀해 주세요.", 1.0);
     }
 }
 
-// ====== 스마트폰 터치스크린 우측 스와이프 제스처 (레이어 닫기) 구현 ======
 let swipeStartX = 0;
 let swipeStartY = 0;
 let swipeEndX = 0;
@@ -741,8 +766,8 @@ window.addEventListener('touchend', (e) => {
 }, { passive: true });
 
 function handleSwipeCloseGesture() {
-    const deltaX = swipeEndX - swipeStartX; // 양수면 왼쪽에서 오른쪽으로 이동
-    const deltaY = Math.abs(swipeEndY - swipeStartY); // 수직 편차
+    const deltaX = swipeEndX - swipeStartX; 
+    const deltaY = Math.abs(swipeEndY - swipeStartY); 
     
     if (deltaX > 50 && deltaY < 60) {
         const guideOverlay = document.getElementById('guide-overlay');

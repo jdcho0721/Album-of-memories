@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전북맹아학교: 추억의 앨범</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Pretendard:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --frame: #8d6e63; 
+            --gold: #ffd700; 
+            --accent: #e67e22;
+            --soft-bg: #fff9f0;
+        }
+        
+        body { 
+            margin: 0; background: #2c3e50; color: #333;
+            font-family: 'Pretendard', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; 
+            padding: 12px; box-sizing: border-box;
+        }
+
+        header {
+            width: 100%;
+            max-width: 850px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* [적응형 폰트] 제목 크기가 화면 폭에 따라 부드럽게 변함 */
+        .game-title {
+            font-family: 'Gowun Batang', serif;
+            font-size: clamp(1.6rem, 7vw, 2.8rem);
+            color: var(--gold);
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        #guide-btn {
+            position: absolute; top: 25px; left: 25px;
+            padding: 12px 24px; 
+            background: linear-gradient(135deg, #8d6e63, #5d4037);
+            color: white; border: none; border-radius: 50px; cursor: pointer;
+            font-family: 'Gowun Batang', serif; font-weight: bold; 
+            font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s;
+            z-index: 100;
+        }
+
+        #guide-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            z-index: 1000; justify-content: center; align-items: center;
+        }
+        
+        #guide-content {
+            width: 550px; max-width: 90%; background: var(--soft-bg); padding: 30px 20px; border-radius: 25px; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: slideUp 0.4s ease-out;
+            font-family: 'Gowun Batang', serif;
+            box-sizing: border-box; max-height: 85vh; overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-btn {
+            position: absolute; top: 15px; right: 20px; font-size: 2.3rem; cursor: pointer; color: #8d6e63; font-weight: bold;
+        }
+
+        #guide-content h1 { 
+            margin-top: 0; color: #4a3e36; font-size: clamp(1.5rem, 5vw, 2.0rem); text-align: center;
+            margin-bottom: 20px; border-bottom: 2px dashed #d7ccc8; padding-bottom: 12px;
+        }
+        
+        .guide-box { 
+            background: white; padding: 15px; border-radius: 12px; 
+            margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #efebe9;
+        }
+        
+        .guide-box h2 { font-size: clamp(1.15rem, 4vw, 1.35rem); margin-top: 0; color: var(--accent); margin-bottom: 8px; }
+        .guide-box p { color: #2c3e50; line-height: 1.6; margin: 0; font-size: clamp(0.95rem, 3.8vw, 1.15rem); font-weight: 500; }
+
+        #author-section {
+            margin-top: 20px; padding-top: 15px; border-top: 1px solid #d7ccc8;
+            text-align: center;
+        }
+        #author-section h3 { font-size: 1.1rem; color: #8d6e63; margin-bottom: 6px; }
+        .author-info { font-size: 0.9rem; color: #6d4c41; line-height: 1.5; }
+
+        /* [적응형 프레임] 가로폭 최대 제어로 양옆 안전 여백 보호 */
+        #album-frame { 
+            padding: 15px; background: #4a3e36; border-radius: 20px; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6); width: 100%; max-width: 1000px; box-sizing: border-box; 
+            margin-bottom: 15px;
+        }
+        
+        /* [유연한 격자 크기] PC에서는 기본 4열 배치 */
+        #album-container {
+            width: 100%; border: 12px solid var(--frame); background: #fff;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            padding: 20px; gap: 15px; border-radius: 10px; box-sizing: border-box;
+        }
+        
+        /* [적응형 카드] 가로폭 변화에 비례해 세로가 자동 연동(Aspect-Ratio)되도록 정형화 */
+        .photo-card {
+            background: #fff; border: 1px solid #eee; border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s; padding: 10px;
+            outline: none; box-sizing: border-box; aspect-ratio: 1 / 1.35;
+        }
+
+        .photo-card:hover, .photo-card:focus { 
+            transform: translateY(-4px); 
+            border-color: #ff3d00;
+            box-shadow: 0 0 0 4px #fff, 0 0 0 9px #ff3d00;
+            z-index: 10;
+        }
+        
+        .character-img {
+            width: 100%;             /* 카드의 폭에 꽉 차게 변경 */
+            aspect-ratio: 1 / 1;     /* 1:1 비율을 유지하여 정사각형 격자 틀 완성 */
+            background-size: cover;
+            background-position: center 20%; 
+            background-repeat: no-repeat;
+            border-radius: 8px;      /* 모서리 둥글기 */
+            margin-bottom: 8px;
+            border: 1px solid #f5f5f5;
+        }
+        
+        #img-김희연 { background-image: url('김희연-고3c.jpeg'); }
+        #img-송영조 { background-image: url('송영조-고3c.png'); }
+        #img-이정민 { background-image: url('이정민-고3c.png'); }
+        #img-임이삭 { background-image: url('임이삭-고3c.jpeg'); }
+        
+        /* 최철 선생님 전용 크기 및 위치 맞춤 조정 (얼굴이 크게 나오도록 설정) */
+        #img-최철 { 
+            background-image: url('최철-선생님c.png'); 
+            background-size: 135%; 
+            background-position: center 12%; 
+        } 
+        
+        #img-임찬서 { background-image: url('임찬서-고3c.jpeg'); }
+        #img-장준원 { background-image: url('장준원-고3c.jpeg'); }
+        #img-조헌 { background-image: url('조헌-고3c.png'); }
+
+        .name-tag { font-weight: bold; margin-top: 4px; color: #2c3e50; }
+        
+        #info-panel {
+            margin-top: 15px; width: 100%; max-width: 1000px; display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 25px; background: rgba(255, 255, 255, 0.1); border-radius: 20px; color: white;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); box-sizing: border-box;
+        }
+        #stage-indicator { font-size: 1.1rem; color: var(--gold); font-weight: bold; min-width: 110px; }
+        #message-box { 
+            font-size: clamp(1.1rem, 4.2vw, 1.35rem); 
+            font-family: 'Gowun Batang', serif; color: #fff; text-align: right; flex: 1; margin-left: 20px; line-height: 1.4; 
+        }
+        
+        .chatbot-header {
+            width: 100%; max-width: 850px; background: #1A362D; border: 2px solid var(--gold);
+            border-radius: 15px; padding: 12px 20px; margin-bottom: 15px;
+            display: flex; align-items: center; gap: 15px; color: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); box-sizing: border-box;
+        }
+        .mic-section { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .mic-btn {
+            width: 48px; height: 48px; background: rgba(212, 175, 55, 0.2);
+            border: 2px solid var(--gold); border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .mic-btn.active { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        .wave-container { display: flex; gap: 2px; align-items: center; height: 16px; }
+        .wave-bar { width: 2.5px; height: 4px; background: #fff; }
+        .active .wave-bar { animation: wave-anim 1s infinite ease-in-out; }
+        @keyframes wave-anim { 0%, 100% { height: 4px; } 50% { height: 16px; } }
+        #chat-status { font-size: clamp(0.95rem, 3.8vw, 1.15rem); color: var(--soft-bg); flex: 1; line-height: 1.3; }
+
+        #video-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center;
+            flex-direction: column; padding: 10px; box-sizing: border-box;
+        }
+        #video-player {
+            width: 800px; max-width: 100%; border: 4px solid var(--gold); border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7); background: #000;
+        }
+        #video-caption {
+            margin-top: 12px; color: #fff; font-family: 'Gowun Batang', serif; 
+            font-size: clamp(1.1rem, 4.5vw, 1.5rem); text-align: center; padding: 0 10px;
+        }
+
+        /* ==========================================================================
+           [적응형 핵심] 스마트폰 전용 3열 격자(3 by 2 구조 확장) 및 최적화 마크업
+           ========================================================================== */
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .game-title { margin: 65px 0 12px 0; }
+            #guide-btn { top: 15px; left: 15px; padding: 8px 14px; }
+            
+            .chatbot-header { padding: 10px 12px; gap: 10px; }
+            
+            /* 모바일 화면 폭에 부드럽게 적응하며 가로 3열 격자 구조 유지 */
+            #album-container {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 12px;
+                padding: 15px;
+                box-sizing: border-box;
+            }
+            .photo-card {
+                background: #fff;
+                padding: 10px;
+                border-radius: 12px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                transition: transform 0.2s;
+                cursor: pointer;
+            }
+            .name-tag { font-weight: 800; margin-top: 6px; }
+
+            #info-panel { flex-direction: column; text-align: center; gap: 6px; padding: 12px; }
+            #message-box { text-align: center; margin-left: 0; font-weight: bold; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="bgm-player" src="Sunlight_on_the_Classroom_Floor.mp3" loop preload="auto"></audio>
+
+<header role="banner">
+    <h1 class="game-title">전북맹아학교: 추억의 앨범</h1>
+    <button id="guide-btn" onclick="toggleGuide(true)">이용 방법</button>
+
+    <div class="chatbot-header" id="chatbot-ui">
+        <div class="mic-section">
+            <button class="mic-btn" id="mic-trigger" onclick="toggleSpeechRecognition()">
+                <div class="wave-container">
+                    <div class="wave-bar" style="animation-delay: 0.1s"></div>
+                    <div class="wave-bar" style="animation-delay: 0.2s"></div>
+                    <div class="wave-bar" style="animation-delay: 0.3s"></div>
+                </div>
+            </button>
+            <span style="font-size: 0.7rem; color: var(--gold); font-weight: bold;">V키 클릭</span>
+        </div>
+        <div id="chat-status">"최철 선생님" 또는 <br style="display:none;" class="m-br">"임찬서 장래희망"이라고 말해보세요.</div>
+    </div>
+</header>
+
+<div id="guide-overlay" onclick="toggleGuide(false)">
+    <div id="guide-content" onclick="event.stopPropagation()">
+        <span class="close-btn" onclick="toggleGuide(false)">&times;</span>
+        <h1>추억의 소리 앨범</h1>
+        <div class="guide-box">
+            <h2>이용 방법</h2>
+            <p>1. <b>친구 선택:</b> 마우스 클릭, 화면 터치, 또는 키보드 방향키 이동 후 엔터 키를 눌러보세요.</p>
+            <p>2. <b>추억의 릴레이 재생:</b> 카드를 선택하면 [명찰 안내 ➔ 사진 해설 ➔ 실제 목소리 ➔ 장래 희망 ➔ 장래희망 영상]이 순서대로 자동 재생됩니다.</p>
+            <p>3. <b>장래희망 바로 보기:</b> 카드를 빠르게 더블 클릭 (또는 더블 탭) 하거나 키보드 스페이스바를 누르면, 친구의 소망 안내와 영상을 바로 감상할 수 있습니다.</p>
+            <p>4. <b>음성 인식 챗봇:</b> 키보드 <b>V 키</b>를 누르거나 마이크 아이콘을 누른 후 "임이삭 어디 있어?", "최철 선생님 졸업멘트"와 같이 질문해 보세요.</p>
+            <p>5. <b>스마트폰 제스처 (창 닫기):</b> 영상이 상영 중이거나 이용 방법 창이 열려 있을 때, 화면을 책장 넘기듯 <b>왼쪽에서 오른쪽으로 스와이프(밀기)</b>하면 안내 창이나 영상이 자연스럽게 닫힙니다.</p>
+        </div>
+        <footer id="author-section">
+            <h3>저자 소개</h3>
+            <div class="author-info">
+                <strong>조준동 (趙浚東) 교수</strong><br>
+                성균관대학교 정보통신대학 전자전기공학부 명예교수<br>
+                <span style="font-size: 0.85rem; display: block; margin-top: 6px; color: #8d6e63; font-weight: bold;">
+                    Copyright © 2026 Jun-Dong Cho. All rights reserved.
+                </span>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<div id="audio-container" aria-hidden="true">
+    <audio id="audio-김희연" src="김희연졸업2.m4a" preload="auto"></audio>
+    <audio id="audio-송영조" src="송영조졸업.mp3" preload="auto"></audio>
+    <audio id="audio-이정민" src="이정민 졸업.m4a" preload="auto"></audio>
+    <audio id="audio-임이삭" src="임이삭졸업.m4a" preload="auto"></audio>
+    <audio id="audio-최철" src="담임_최철_졸업멘트.m4a" preload="auto"></audio> 
+    <audio id="audio-임찬서" src="임찬서졸업2.m4a" preload="auto"></audio>
+    <audio id="audio-장준원" src="장준원졸업2.m4a" preload="auto"></audio> 
+    <audio id="audio-조헌" src="조헌졸업1.m4a" preload="auto"></audio>
+</div>
+
+<div id="video-overlay" onclick="closeVideoPlayer()">
+    <video id="video-player" controls preload="auto" onclick="event.stopPropagation()"></video>
+    <div id="video-caption"></div>
+</div>
+
+<main id="album-frame">
+    <div id="album-container" role="list">
+        <div class="photo-card" id="card-최철" role="button" tabindex="0">
+            <div class="character-img" id="img-최철" aria-label="단정한 곤색 정장에 와인색 넥타이를 매고, 환한 미소로 졸업 축하하고 있는 최철 담임선생님입니다."></div>
+            <div class="name-tag">최철 선생님</div>
+        </div>
+        <div class="photo-card" id="card-김희연" role="button" tabindex="0">
+            <div class="character-img" id="img-김희연" aria-label="분홍색 동그란 안경을 쓰고 단발머리를 한 채 밝고 다정하게 미소 짓고 있는 김희연 학생입니다."></div>
+            <div class="name-tag">김희연</div>
+        </div>
+        <div class="photo-card" id="card-송영조" role="button" tabindex="0">
+            <div class="character-img" id="img-송영조" aria-label="차분한 일자 앞머리에 카키색 의상을 입고 늠름하고 편안하게 정면을 바라보는 송영조 학생입니다."></div>
+            <div class="name-tag">송영조</div>
+        </div>
+        <div class="photo-card" id="card-이정민" role="button" tabindex="0">
+            <div class="character-img" id="img-이정민" aria-label="가지런한 치아를 드러내며 환하고 유쾌하게 활짝 웃고 있는 이정민 학생입니다."></div>
+            <div class="name-tag">이정민</div>
+        </div>
+        <div class="photo-card" id="card-임이삭" role="button" tabindex="0">
+            <div class="character-img" id="img-임이삭" aria-label="앞머리에 멋진 갈색 브릿지 포인트를 주고 진중하면서도 듬직하게 미소 짓는 임이삭 학생입니다."></div>
+            <div class="name-tag">임이삭</div>
+        </div>
+        <div class="photo-card" id="card-임찬서" role="button" tabindex="0">
+            <div class="character-img" id="img-임찬서" aria-label="투명한 살구색 뿔테 안경을 쓰고 부드럽게 미소 짓는 임찬서 학생입니다."></div>
+            <div class="name-tag">임찬서</div>
+        </div>
+        <div class="photo-card" id="card-장준원" role="button" tabindex="0">
+            <div class="character-img" id="img-장준원" aria-label="다정하고 성실한 눈빛으로 정면을 바라보며 선하고 믿음직한 미소를 짓고 있는 장준원 학생입니다."></div>
+            <div class="name-tag">장준원</div>
+        </div>
+        <div class="photo-card" id="card-조헌" role="button" tabindex="0">
+            <div class="character-img" id="img-조헌" aria-label="개구쟁이 같은 유쾌함과 당당한 에너지를 가득 품고 전면을 응시하는 조헌 학생입니다."></div>
+            <div class="name-tag">조헌</div>
+        </div>
+    </div>
+</main>
+
+<footer id="info-panel">
+    <div id="stage-indicator">앨범 연동</div>
+    <div id="message-box">화면을 터치하여 추억의 소리 앨범을 시작해 주세요.</div>
+</footer>
+
+<script>
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let isAudioUnlocked = false;
+
+function unlockAudio() {
+    if (isAudioUnlocked) return;
+    const silentUtter = new SpeechSynthesisUtterance("");
+    window.speechSynthesis.speak(silentUtter);
+
+    const bgm = document.getElementById('bgm-player');
+    if (bgm) {
+        bgm.volume = 0.15;
+        bgm.play().then(() => console.log("BGM 자동 시작 완료")).catch(err => console.error("BGM 에러:", err));
+    }
+    document.querySelectorAll('audio:not(#bgm-player)').forEach(audio => audio.load());
+    isAudioUnlocked = true;
+
+    updateUI(
+        "앨범 연동 완료", 
+        "추억의 앨범에 오신 것을 환영합니다. 화면을 터치해서 담임 선생님과 추억의 친구를 찾아보세요.", 
+        1.0
+    );
+}
+
+window.addEventListener('click', (e) => {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume().then(() => unlockAudio());
+    } else {
+        unlockAudio();
+    }
+}, { once: true });
+ 
+// 예시: 페이지 로드 시 오디오 잠금을 풀기 위한 오버레이 레이어 예시 로직
+window.addEventListener('DOMContentLoaded', () => {
+    // 1. 화면 전체를 덮는 접근성 진입 패널 동적 생성 (기존 마크업 파괴 방지)
+    const startOverlay = document.createElement('div');
+    startOverlay.style = "position:fixed; top:0; left:0; width:100vw; height:100vh; background:#2c3e50; z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction:column;";
+    startOverlay.setAttribute('role', 'dialog');
+    startOverlay.setAttribute('aria-label', '전북맹아학교 촉각 앨범 감상 시작 화면');
+
+    const startBtn = document.createElement('button');
+    startBtn.innerText = "터치하여 앨범 감상 시작하기";
+    startBtn.style = "padding:24px 40px; font-size:1.5rem; font-weight:bold; background:#ffd700; color:#333; border:none; border-radius:15px; cursor:pointer; width:80%; max-width:400px;";
+    
+    // 스크린 리더가 이 버튼을 가장 먼저 포커스하도록 설정
+    startBtn.setAttribute('aria-label', '화면을 두 번 탭하여 전북맹아학교 추억의 앨범 감상을 시작하세요.');
+    
+    startOverlay.appendChild(startBtn);
+    document.body.appendChild(startOverlay);
+
+    startBtn.onclick = () => {
+        // 사용자의 직접 터치 상호작용이 일어난 이 순간, 모든 브라우저 오디오 권한이 풀립니다.
+        startOverlay.style.display = 'none';
+        
+        // 기존 코드의 초기화 및 환영 음성 실행
+        speak("반갑습니다. 전북맹아학교 촉각 앨범 공간에 오신 것을 환영합니다. 화면을 좌우로 스와이프하여 사용법 가이드를 보거나, 음성 인식 버튼을 눌러 친구들의 이름을 찾아보세요.", 1.0);
+        
+        // 첫 번째 요소로 초점 강제 이동하여 가이드 제공
+        const mainHeader = document.querySelector('h1');
+        if(mainHeader) {
+            mainHeader.setAttribute('tabindex', '-1');
+            mainHeader.focus();
+        }
+    };
+});
+
+const friendData = {
+    '김희연': { dream: "따뜻한 손길로 사람들의 지친 몸과 피로를 치료해 주는 안마사", pitch: 1.1, video: "김희연-분홍빛_안경.mp4" },
+    '송영조': { dream: "주변 사람들에게 언제나 긍정적인 힘을 선사하는 멋진 사람", pitch: 0.9, video: "송영조-카키색_새벽길.mp4" },
+    '이정민': { dream: "시원한 홈런과 함께 희망을 쏘아 올리는 멋진 야구선수", pitch: 1.0, video: "이정민-함께_뛰는_미래.mp4" },
+    '임이삭': { dream: "친구들에게 운동의 즐거움과 신체 활력을 전하는 특수체육교사", pitch: 0.95, video: "임이삭-함께_뛰는_순간.mp4" },
+    /* 최철 선생님 전용 비디오 파일(선생님의_마지막_숙제.mp4) 연동 완료 */
+    '최철': { dream: "사랑하는 제자들의 앞날을 언제 어디서든 늘 든든하게 격려하고 성원을 보내는 훌륭한 나침반", pitch: 1.0, video: "선생님의_마지막_숙제.mp4" }, 
+    '임찬서': { dream: "우리가 살아가는 환경을 깨끗하고 안전하게 지켜내는 방역업체 경영인", pitch: 1.05, video: "임찬서-너의_맘이_머무는_곳.mp4" },
+    '장준원': { dream: "많은 승객들을 목적지까지 편안하고 안전하게 모시는 지하철기관사", pitch: 0.92, video: "장준원-안전한_내일로.mp4" },
+    '조헌': { dream: "피로와 통증을 말끔히 날려버리는 다정하고 훌륭한 안마사", pitch: 1.0, video: "조헌-비타민_같은_너.mp4" }
+};
+
+let currentPlayingAudio = null;
+let currentIndex = -1;
+const cards = Array.from(document.querySelectorAll('.photo-card'));
+
+function getDynamicCols() {
+    return window.innerWidth <= 768 ? 3 : 4; 
+}
+
+function getOrdinalString(num, type) {
+    const ordinals = ["", "첫 번째", "두 번째", "세 번째", "네 번째", "다섯 번째", "여섯 번째", "일곱 번째", "여덟 번째", "아홉 번째", "열 번째"];
+    const base = ordinals[num] || `${num}번째`;
+    return `${base} ${type}`;
+}
+
+function speak(text, pitch, onEndCallback) {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'ko-KR';
+    utter.pitch = pitch || 1.0;
+    if (onEndCallback) utter.onend = onEndCallback;
+    window.speechSynthesis.speak(utter);
+}
+
+function updateUI(stage, text, pitch, onEndCallback) {
+    document.getElementById('stage-indicator').innerText = stage;
+    document.getElementById('message-box').innerText = text;
+    speak(text, pitch, onEndCallback);
+}
+
+function stopAllAudio() {
+    window.speechSynthesis.cancel();
+    if (currentPlayingAudio) {
+        currentPlayingAudio.pause();
+        currentPlayingAudio.currentTime = 0;
+        currentPlayingAudio = null;
+    }
+    closeVideoPlayer(false);
+}
+
+function closeVideoPlayer(triggerTTS = true) {
+    const videoOverlay = document.getElementById('video-overlay');
+    const videoPlayer = document.getElementById('video-player');
+    
+    if (videoOverlay.style.display === 'flex' || window.getComputedStyle(videoOverlay).display === 'flex') {
+        videoPlayer.pause();
+        videoPlayer.currentTime = 0;
+        videoOverlay.style.display = 'none';
+        
+        const bgm = document.getElementById('bgm-player');
+        if (bgm) bgm.volume = 0.15;
+
+        if (triggerTTS) {
+            document.getElementById('stage-indicator').innerText = "앨범 탐색";
+            document.getElementById('message-box').innerText = "영상 상영이 완료되었습니다. 다른 친구도 찾아보세요.";
+        }
+    }
+}
+
+function playDreamVideo(name) {
+    const videoOverlay = document.getElementById('video-overlay');
+    const videoPlayer = document.getElementById('video-player');
+    const videoCaption = document.getElementById('video-caption');
+    
+    const videoSrc = friendData[name].video;
+    if (!videoSrc) {
+        document.getElementById('stage-indicator').innerText = "앨범 탐색";
+        document.getElementById('message-box').innerText = `${name} 선생님의 훈화 해설이 완료되었습니다.`;
+        return;
+    }
+
+    const bgm = document.getElementById('bgm-player');
+    if (bgm) bgm.volume = 0.02;
+
+    if (name === '최철') {
+        document.getElementById('stage-indicator').innerText = "⑤ 훈화 영상 재생";
+        document.getElementById('message-box').innerText = "최철 선생님의 마지막 숙제 영상을 상영합니다.";
+        videoCaption.innerText = `🎬 최철 선생님의 메시지: ${friendData[name].dream}`;
+    } else {
+        document.getElementById('stage-indicator').innerText = "⑤ 미래 영상 재생";
+        document.getElementById('message-box').innerText = `${name} 학생의 꿈이 담긴 영상을 상영합니다.`;
+        videoCaption.innerText = `🎬 ${name} 학생의 꿈: ${friendData[name].dream}`;
+    }
+
+    videoPlayer.src = videoSrc;
+    videoOverlay.style.display = 'flex';
+    
+    videoPlayer.load();
+    videoPlayer.play().catch(err => {
+        console.error("비디오 자동 재생 실패:", err);
+    });
+
+    videoPlayer.onended = () => {
+        closeVideoPlayer(true);
+    };
+}
+
+function executeSingleClickAction(name) {
+    stopAllAudio();
+    
+    const cardNames = cards.map(card => card.id.replace('card-', ''));
+    const targetIdx = cardNames.indexOf(name);
+    
+    const activeCols = getDynamicCols();
+    const row = Math.floor(targetIdx / activeCols) + 1;
+    const col = (targetIdx % activeCols) + 1;
+    
+    const rowString = getOrdinalString(row, '줄');
+    const colString = getOrdinalString(col, '칸');
+    
+    const titleType = name === '최철' ? '최철 선생님의 졸업 사진 명찰' : `${name} 학생의 졸업 사진 명찰`;
+    
+    updateUI("① 명찰 안내", `이 카드는 ${rowString}, ${colString}에 있는 ${titleType}입니다.`, 1.0, () => {
+        setTimeout(() => {
+            const imgElement = document.getElementById(`img-${name}`);
+            const desc = (imgElement && imgElement.getAttribute('aria-label')) || "";
+            
+            updateUI("② 사진 해설", desc, friendData[name].pitch, () => {
+                setTimeout(() => {
+                    playStudentVoice(name);
+                }, 800);
+            });
+        }, 800);
+    });
+}
+
+function playStudentVoice(name) {
+    const infoText = name === '최철' ? "최철 선생님이 목소리로 직접 전하는 따뜻한 졸업 축하 메시지입니다." : `${name} 학생이 목소리로 직접 전하는 이야기입니다.`;
+    document.getElementById('stage-indicator').innerText = "③ 실제 목소리";
+    document.getElementById('message-box').innerText = infoText;
+    
+    const audio = document.getElementById(`audio-${name}`);
+    if (audio) {
+        currentPlayingAudio = audio;
+        audio.load();
+        
+        audio.onended = () => {
+            currentPlayingAudio = null;
+            setTimeout(() => announceDreamTTS(name), 500);
+        };
+        
+        audio.play().catch((err) => {
+            console.error("오디오 재생 실패로 다음 단계 직행:", err);
+            announceDreamTTS(name);
+        });
+    } else {
+        announceDreamTTS(name);
+    }
+}
+
+function announceDreamTTS(name) {
+    const dreamText = name === '최철' ? `최철 선생님의 깊은 바람은 바로 ${friendData[name].dream}입니다.` : `${name} 학생의 자랑스러운 소망은 바로 ${friendData[name].dream}입니다.`;
+    updateUI("④ 장래 희망", dreamText, friendData[name].pitch, () => {
+        setTimeout(() => {
+            playDreamVideo(name);
+        }, 800);
+    });
+}
+
+function executeQuickDreamAction(name) {
+    stopAllAudio();
+    announceDreamTTS(name);
+}
+
+cards.forEach((card, index) => {
+    const name = card.id.replace('card-', '');
+    let touchTimer = null;
+    let isLongPress = false;
+
+    card.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        if (!isAudioUnlocked) { unlockAudio(); return; }
+        if (isLongPress) { isLongPress = false; return; }
+        if (window.speechSynthesis.speaking === false) {
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+        }
+        executeSingleClickAction(name);
+    });
+
+    card.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        executeQuickDreamAction(name);
+    });
+
+    card.addEventListener('touchstart', (e) => {
+        isLongPress = false;
+        touchTimer = setTimeout(() => {
+            isLongPress = true;
+            executeQuickDreamAction(name);
+        }, 600); 
+    }, { passive: true });
+
+    card.addEventListener('touchend', () => { if (touchTimer) clearTimeout(touchTimer); });
+    card.addEventListener('touchmove', () => { if (touchTimer) clearTimeout(touchTimer); });
+    card.addEventListener('focus', () => currentIndex = index);
+});
+
+document.addEventListener('keydown', (e) => {
+    if (!isAudioUnlocked) unlockAudio();
+    if (currentIndex === -1) { currentIndex = 0; cards[0].focus(); return; }
+    const name = cards[currentIndex].id.replace('card-', '');
+    let newIndex = currentIndex;
+    const activeCols = getDynamicCols();
+
+    switch(e.key) {
+        case 'ArrowRight': newIndex = (currentIndex + 1) % cards.length; break;
+        case 'ArrowLeft': newIndex = (currentIndex - 1 + cards.length) % cards.length; break;
+        case 'ArrowDown': if (currentIndex + activeCols < cards.length) newIndex = currentIndex + activeCols; break;
+        case 'ArrowUp': if (currentIndex - activeCols >= 0) newIndex = currentIndex - activeCols; break;
+        case 'Enter': executeSingleClickAction(name); break;
+        case ' ': 
+            e.preventDefault(); 
+            executeQuickDreamAction(name); 
+            break;
+        case 'v': case 'V': toggleSpeechRecognition(); break;
+        case 'Escape': closeVideoPlayer(true); break; 
+    }
+    if (newIndex !== currentIndex) { currentIndex = newIndex; cards[currentIndex].focus(); }
+});
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let isRecognizing = false;
+
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ko-KR';
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+        isRecognizing = true;
+        document.getElementById('mic-trigger').classList.add('active');
+        document.getElementById('chat-status').innerText = "궁금한 졸업생이나 선생님의 이름을 경청하고 있습니다...";
+    };
+
+    recognition.onresult = (event) => {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
+        }
+        if (finalTranscript) handleVoiceCommand(finalTranscript);
+    };
+
+    recognition.onend = () => {
+        isRecognizing = true;
+        setTimeout(() => {
+            isRecognizing = false;
+            document.getElementById('mic-trigger').classList.remove('active');
+        }, 500);
+    };
+}
+
+function toggleSpeechRecognition() {
+    if (!recognition) return alert("현재 브라우저가 웹 음성 인식(Web Speech API)을 지원하지 않습니다.");
+    isRecognizing ? recognition.stop() : recognition.start();
+}
+
+function toggleGuide(show) { 
+    const overlay = document.getElementById('guide-overlay');
+    if (show) {
+        overlay.style.display = 'flex';
+        if (!isAudioUnlocked) unlockAudio();
+        
+        const guideNarration = "추억의 소리 앨범 이용 방법 안내입니다. " +
+            "첫째, 친구 선택은 마우스 클릭이나 화면 터치, 또는 키보드 방향키 이동 후 엔터 키를 통해 가능합니다. " +
+            "둘째, 카드를 선택하면 명찰 안내, 사진 해설, 실제 목소리, 장래 희망, 그리고 꿈이 가득 담긴 동영상이 순서대로 자동 재생됩니다. " +
+            "셋째, 카드를 더블 클릭하거나 키보드 스페이스 바를 누르면, 또는 화면을 길게 터치하면 친구의 장래희망 안내와 영상을 바로 감상할 수 있습니다. " +
+            "넷째, 키보드 브이 키를 누르거나 마이크 아이콘을 누른 후 이름을 말하면 인공지능 챗봇이 위치와 꿈을 친절하게 안내합니다. " +
+            "다섯째, 스마트폰을 사용하실 때 열려 있는 안내창이나 비디오 화면을 왼쪽에서 오른쪽으로 부드럽게 밀어 넘기면 이전 화면 상태로 안전하게 돌아갑니다.";
+        
+        updateUI("이용방법 안내", "이용 방법 가이드를 음성으로 해설합니다.", 1.0);
+        speak(guideNarration, 1.0);
+    } else {
+        overlay.style.display = 'none';
+        stopAllAudio();
+        document.getElementById('stage-indicator').innerText = "앨범 탐색";
+        document.getElementById('message-box').innerText = "추억이 담긴 앨범에서 친구를 선택해 주세요.";
+    }
+}
+
+function getSimilarity(s1, s2) {
+    s1 = s1.toLowerCase();
+    s2 = s2.toLowerCase();
+    const costs = [];
+    for (let i = 0; i <= s1.length; i++) {
+        let lastValue = i;
+        for (let j = 0; j <= s2.length; j++) {
+            if (i == 0) costs[j] = j;
+            else {
+                if (j > 0) {
+                    let newValue = costs[j - 1];
+                    if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                        newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                    costs[j - 1] = lastValue;
+                    lastValue = newValue;
+                }
+            }
+        }
+        if (i > 0) costs[s2.length] = lastValue;
+    }
+    const maxLen = Math.max(s1.length, s2.length);
+    if (maxLen === 0) return 1.0;
+    return (maxLen - costs[s2.length]) / maxLen;
+}
+
+function handleVoiceCommand(cmd) {
+    const cleanCmd = cmd.replace(/\s+/g, "");
+    document.getElementById('chat-status').innerText = `인식 결과: "${cmd}"`;
+    
+    const cardNames = cards.map(card => card.id.replace('card-', ''));
+    
+    let bestMatchName = null;
+    let highestSimilarity = 0;
+    let directMatch = false;
+
+    for (let name of cardNames) {
+        if (cleanCmd.includes(name)) {
+            bestMatchName = name;
+            directMatch = true;
+            break;
+        }
+    }
+
+    if (!directMatch) {
+        for (let i = 0; i <= cleanCmd.length - 2; i++) {
+            for (let chunkLen = 2; chunkLen <= 4; chunkLen++) {
+                if (i + chunkLen > cleanCmd.length) continue;
+                const chunk = cleanCmd.substring(i, i + chunkLen);
+                
+                for (let name of cardNames) {
+                    const similarity = getSimilarity(chunk, name);
+                    if (similarity > highestSimilarity) {
+                        highestSimilarity = similarity;
+                        bestMatchName = name;
+                    }
+                }
+            }
+        }
+    }
+
+    if (bestMatchName && (directMatch || highestSimilarity >= 0.5)) {
+        const targetIdx = cardNames.indexOf(bestMatchName);
+        
+        if (cleanCmd.includes("꿈") || cleanCmd.includes("장래희망") || cleanCmd.includes("진로") || cleanCmd.includes("소망") || cleanCmd.includes("훈화") || cleanCmd.includes("멘트")) {
+            executeQuickDreamAction(bestMatchName);
+        } else {
+            const activeCols = getDynamicCols();
+            const row = Math.floor(targetIdx / activeCols) + 1; 
+            const col = (targetIdx % activeCols) + 1; 
+            
+            currentIndex = targetIdx;
+            cards[currentIndex].focus();
+            cards[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            const rowString = getOrdinalString(row, '줄');
+            const colString = getOrdinalString(col, '칸');
+            
+            const targetTitle = bestMatchName === '최철' ? '최철 선생님' : `${bestMatchName} 학생`;
+            updateUI("위치 안내", `${targetTitle}은 ${rowString} ${colString}에 있습니다.`, 1.0);
+        }
+    } else {
+        speak("대상을 정확하게 인식하지 못했습니다. 다시 천천히 말씀해 주세요.", 1.0);
+    }
+}
+
+let swipeStartX = 0;
+let swipeStartY = 0;
+let swipeEndX = 0;
+let swipeEndY = 0;
+
+window.addEventListener('touchstart', (e) => {
+    swipeStartX = e.changedTouches[0].screenX;
+    swipeStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+
+window.addEventListener('touchend', (e) => {
+    swipeEndX = e.changedTouches[0].screenX;
+    swipeEndY = e.changedTouches[0].screenY;
+    handleSwipeCloseGesture();
+}, { passive: true });
+
+function handleSwipeCloseGesture() {
+    const deltaX = swipeEndX - swipeStartX; 
+    const deltaY = Math.abs(swipeEndY - swipeStartY); 
+    
+    if (deltaX > 50 && deltaY < 60) {
+        const guideOverlay = document.getElementById('guide-overlay');
+        const videoOverlay = document.getElementById('video-overlay');
+
+        if (guideOverlay && (guideOverlay.style.display === 'flex' || window.getComputedStyle(guideOverlay).display === 'flex')) {
+            toggleGuide(false);
+            return;
+        }
+
+        if (videoOverlay && (videoOverlay.style.display === 'flex' || window.getComputedStyle(videoOverlay).display === 'flex')) {
+            closeVideoPlayer(true);
+            return;
+        }
+    }
+}
+</script>
+</body>
+</html>

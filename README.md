@@ -222,23 +222,10 @@ https://github.com/jdcho0721/Album-of-memories
 
 | 역할 | 이름 | 소속 |
 |---|---|---|
-| Exhibition Creator & Multisensory Interaction Director | **조준동 (Cho Jundong)** | 성균관대학교 정보통신대학 명예교수 · Humartology Lab 설립자 |
+조준동 (Cho Jundong) | 성균관대학교 정보통신대학 명예교수 · Humartology Lab 설립자 |
 
 ✉ jdcho@skku.edu · 🌐 [blog.naver.com/humartology](https://blog.naver.com/humartology)
 
-### 추억의 3D 앨범 촉각 모델 / 3D Tactile Album
-
-| 역할 | 이름 |
-|---|---|
-| 심화융합캡스톤디자인 팀 (지도교수 조준동) | 문홍진 · 남재호 · 장예림 · 최송희 |
-| 지원 | 성균관대학교 RISE 사업단 · 전북맹아학교 |
-
-### 도와주신 분 / Contributors
-
-| 역할 | 이름 | 소속 |
-|---|---|---|
-| Virtual Archaeology & Tactile Production Director | **김호용** | (주)위프코 대표 |
-| Accessibility Consultant & Barrier-Free Supervisor | **육근해** | 장애인문화복지연구소 대표 |
 
 ## 라이선스 / License
 
